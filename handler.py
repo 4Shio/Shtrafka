@@ -34,7 +34,7 @@ with session as session:
           color = State()
           number = State()
           address = State()
-    
+          name = State()
 
     @router.message(Command("start"))
     async def start(message:Message):
@@ -76,16 +76,22 @@ with session as session:
         @router.message(GetQuery.number)
         async def get_number(message_number:types.Message,state:FSMContext):
             await state.update_data(number = message_number.text)
+            await state.set_state(GetQuery.name)
+            await message_number.answer(text="Введите имя водителя")
+            
+        @router.message(GetQuery.name)
+        async def get_d_name(message_d_name:types.Message,state:FSMContext):
+            await state.update_data(name = message_d_name.text)
+
             data = await state.get_data()
-            
-            
             now = datetime.now()
             car =  cars_to_get(mark = data['mark'],
                         color = data['color'],
                         gos_number = data['number'],
                         address = data['addres'],
                         time = now,
-                        
+                        name_of_driver=data['name'],
+                        name_of_geter=message_d_name.from_user.full_name
                         )
             session.add(car)
             session.commit()
@@ -93,5 +99,5 @@ with session as session:
     @router.message(F.text == "просмотр вех автомобилей")
     async def view_all(message_view_all:types.Message):
          
-         await message_view_all.answer(text= make_more_str(session.query(cars_to_get.mark,cars_to_get.color, cars_to_get.gos_number,cars_to_get.address,cars_to_get.time).all()))
+         await message_view_all.answer(text= make_more_str(session.query(cars_to_get.mark,cars_to_get.color, cars_to_get.gos_number,cars_to_get.address,cars_to_get.time,cars_to_get.name_of_driver,cars_to_get.name_of_geter).all()))
          session.rollback()
