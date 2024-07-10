@@ -50,7 +50,7 @@ with session as session:
 
     @router.message(F.text == "Добавить автомобиль")
     async def add_avto(message:types.Message,state:FSMContext):
-        await message.answer(text='Напишите марку')
+        await message.answer(text='Введите  марку')
           
         await state.set_state(GetQuery.mark)
 
@@ -58,7 +58,7 @@ with session as session:
         async def get_mark(message_mark:types.Message,state:FSMContext):
                 await state.update_data(mark =message_mark.text)
                 await state.set_state(GetQuery.color)
-                await message_mark.answer(text="Теперь напиши цвет")
+                await message_mark.answer(text="Введите цвет")
 
         @router.message(GetQuery.color)
         async def get_color(message_color:types.Message,state:FSMContext):
