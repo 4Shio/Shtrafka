@@ -50,7 +50,7 @@ with session as session:
     
     @router.message(Command("users"))
     async def users(message:Message):
-         await message.answer(text=session.query(Workers.name,Workers.telegram_id).all() )
+         await message.answer(text=make_more_str(session.query(Workers.name,Workers.telegram_id).all()) )
     
     @router.message(F.text == "Добавить автомобиль")
     async def add_avto(message:types.Message,state:FSMContext):
