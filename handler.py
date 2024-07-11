@@ -39,14 +39,14 @@ with session as session:
     @router.message(Command("start"))
     async def start(message:Message):
                 if session.query(Workers).filter_by(telegram_id = message.from_user.id).count() ==0:
-                    await message.answer (text="Как я погляжу вы новенький \n Приветсвую - это тестовый бот для штрафстоянки",reply_markup=make_row_keyboard(["Добавить автомобиль","просмотр вех автомобилей"]))
+                    await message.answer (text="Как я погляжу вы новенький \n Приветсвую - это тестовый бот для штрафстоянки",reply_markup=make_row_keyboard(["Добавить автомобиль","Все авто"]))
                     name = Workers(name = message.from_user.full_name,telegram_id = message.from_user.id)
                     session.add(name)
                     session.commit()
                     session.close()
 
                 else:     
-                    await message.answer(text='Приветсвую - это тестовый бот для штрафстоянки',reply_markup=make_row_keyboard(["Добавить автомобиль","просмотр вех автомобилей"]))
+                    await message.answer(text='Приветсвую - это тестовый бот для штрафстоянки',reply_markup=make_row_keyboard(["Добавить автомобиль","Все авто"]))
 
     @router.message(F.text == "Добавить автомобиль")
     async def add_avto(message:types.Message,state:FSMContext):
@@ -82,9 +82,10 @@ with session as session:
         @router.message(GetQuery.name)
         async def get_d_name(message_d_name:types.Message,state:FSMContext):
             await state.update_data(name = message_d_name.text)
-
+            
             data = await state.get_data()
             now = datetime.now()
+            await message_d_name.answer(text='Автомобиль '+data['mark']+' ' + ' '+data['color'] +' '+ data['number']+'\n'+ 'Успешно добавлен')
             car =  cars_to_get(mark = data['mark'],
                         color = data['color'],
                         gos_number = data['number'],
@@ -96,7 +97,7 @@ with session as session:
             session.add(car)
             session.commit()
             session.rollback()
-    @router.message(F.text == "просмотр вех автомобилей")
+    @router.message(F.text == "Все авто")
     async def view_all(message_view_all:types.Message):
          
          await message_view_all.answer(text= make_more_str(session.query(cars_to_get.mark,cars_to_get.color, cars_to_get.gos_number,cars_to_get.address,cars_to_get.time,cars_to_get.name_of_driver,cars_to_get.name_of_geter).all()))
