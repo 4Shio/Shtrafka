@@ -47,7 +47,11 @@ with session as session:
 
                 else:     
                     await message.answer(text='Приветсвую - это тестовый бот для штрафстоянки',reply_markup=make_row_keyboard(["Добавить автомобиль","Все авто"]))
-
+    
+    @router.message(Command("users"))
+    async def users(message:Message):
+         await message.answer(text=session.query(Workers.name,Workers.telegram_id).all() )
+    
     @router.message(F.text == "Добавить автомобиль")
     async def add_avto(message:types.Message,state:FSMContext):
         await message.answer(text='Введите  марку')
