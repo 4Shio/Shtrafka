@@ -38,7 +38,7 @@ class cars_to_get(Base):
     mark:Mapped[str]
     gos_number:Mapped[str]
     color:Mapped[str]
-    address:Mapped[str]
+    address:Mapped[str] = mapped_column(nullable=True)
     time:Mapped[datetime]
 
     def __repr__(self) -> str:
